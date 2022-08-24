@@ -1,29 +1,55 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { EuiBasicTable } from '@elastic/eui';
 
-export function ModelTable() {
-  const columns = [
-    {
-      field: 'id',
-      name: 'ID',
-    },
-    {
-      field: 'name',
-      name: 'Name',
-    },
-    {
-      field: 'algorithm',
-      name: 'Algorithm',
-    },
-  ];
+import { ModelSearchItem } from '../services/model_service';
 
-  const pagination = {
-    pageIndex: 0,
-    pageSize: 30,
-    totalItemCount: 100,
-    pageSizeOptions: [30, 0],
-    showPerPageOptions: true,
+export function ModelTable(props: {
+  models: ModelSearchItem[];
+  pagination: {
+    currentPage: number;
+    pageSize: number;
+    totalRecords: number | undefined;
   };
+}) {
+  const columns = useMemo(
+    () => [
+      {
+        field: 'id',
+        name: 'ID',
+      },
+      {
+        field: 'name',
+        name: 'Name',
+      },
+      {
+        field: 'algorithm',
+        name: 'Algorithm',
+      },
+    ],
+    []
+  );
 
-  return <EuiBasicTable columns={columns} items={[]} pagination={pagination} onChange={() => {}} />;
+  const pagination = useMemo(
+    () => ({
+      pageIndex: props.pagination.currentPage,
+      pageSize: props.pagination.pageSize,
+      totalItemCount: props.pagination.totalRecords || 0,
+      pageSizeOptions: [15, 30, 50, 100],
+      showPerPageOptions: true,
+    }),
+    [props.pagination]
+  );
+
+  const handleChange = useCallback((data) => {
+    console.log(data);
+  }, []);
+
+  return (
+    <EuiBasicTable
+      columns={columns}
+      items={props.models}
+      pagination={pagination}
+      onChange={handleChange}
+    />
+  );
 }

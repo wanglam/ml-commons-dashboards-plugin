@@ -14,7 +14,7 @@
  */
 
 import { schema } from '@osd/config-schema';
-import { IRouter } from '../../../../src/core/server';
+import { IRouter, opensearchDashboardsResponseFactory } from '../../../../src/core/server';
 import { ModelService, TrainService } from '../services';
 import { ModelNotFound } from '../services/model_service';
 import { MODEL_API_ENDPOINT } from './constants';
@@ -44,20 +44,9 @@ export default function (
           request,
           body,
         });
-
-        return {
-          status: 200,
-          payload,
-          options: {},
-        };
+        return opensearchDashboardsResponseFactory.ok({ body: payload });
       } catch (err) {
-        return {
-          status: 400,
-          payload: {
-            msg: err.message,
-          },
-          options: {},
-        };
+        return opensearchDashboardsResponseFactory.badRequest({ body: err.message });
       }
     }
   );
@@ -68,29 +57,22 @@ export default function (
       validate: {
         query: schema.object({
           algorithm: schema.maybe(schema.string()),
-          pagination: schema.object({
-            currentPage: schema.number(),
-            pageSize: schema.number(),
-          }),
+          currentPage: schema.number(),
+          pageSize: schema.number(),
         }),
       },
     },
     async (_context, request) => {
+      const { algorithm, currentPage, pageSize } = request.query;
       try {
-        const payload = await modelService.search({ request, ...request.query });
-        return {
-          status: 200,
-          payload,
-          options: {},
-        };
+        const payload = await modelService.search({
+          request,
+          algorithm,
+          pagination: { currentPage, pageSize },
+        });
+        return opensearchDashboardsResponseFactory.ok({ body: payload });
       } catch (err) {
-        return {
-          status: 400,
-          payload: {
-            msg: err.message,
-          },
-          options: {},
-        };
+        return opensearchDashboardsResponseFactory.badRequest({ body: err.message });
       }
     }
   );
@@ -110,24 +92,12 @@ export default function (
           request,
           modelId: request.params.modelId,
         });
-        return {
-          status: 200,
-          options: {},
-        };
+        return opensearchDashboardsResponseFactory.ok();
       } catch (err) {
         if (err instanceof ModelNotFound) {
-          return {
-            status: 404,
-            options: {},
-          };
+          return opensearchDashboardsResponseFactory.notFound();
         }
-        return {
-          status: 400,
-          payload: {
-            msg: err.message,
-          },
-          options: {},
-        };
+        return opensearchDashboardsResponseFactory.badRequest({ body: err.message });
       }
     }
   );
