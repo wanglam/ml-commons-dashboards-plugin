@@ -9,7 +9,7 @@ import {
 import createTrainCluster from './clusters/create_train_cluster';
 import createModelCluster from './clusters/create_model_cluster';
 import { MlCommonsPluginSetup, MlCommonsPluginStart } from './types';
-import { train, modelRouter } from './routes';
+import { modelRouter } from './routes';
 import { ModelService, TrainService } from './services';
 
 export class MlCommonsPlugin implements Plugin<MlCommonsPluginSetup, MlCommonsPluginStart> {
@@ -26,18 +26,14 @@ export class MlCommonsPlugin implements Plugin<MlCommonsPluginSetup, MlCommonsPl
     const trainOSClient = createTrainCluster(core);
     const modelOSClient = createModelCluster(core);
 
-    // Register server side APIs
-    // defineRoutes(router);
-
     const trainService = new TrainService(trainOSClient);
     const modelService = new ModelService(modelOSClient);
 
     const services = {
       trainService,
       modelService,
-    }
+    };
 
-    train(services, router);
     modelRouter(services, router);
 
     return {};

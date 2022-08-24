@@ -13,8 +13,10 @@
  *   permissions and limitations under the License.
  */
 
-import { ILegacyClusterClient } from "../../../../src/core/server";
+import { ILegacyClusterClient, ScopeableRequest } from '../../../../src/core/server';
+import { getQueryFromSize, RequestPagination, getPagination } from './utils/pagination';
 
+export class ModelNotFound {}
 
 export class ModelService {
   private osClient: ILegacyClusterClient;
@@ -23,27 +25,55 @@ export class ModelService {
     this.osClient = osClient;
   }
 
-  search = async (_context, req, res) => {
-    const { callAsCurrentUser } = this.osClient.asScoped(req);
-    try{
-      const resp = await callAsCurrentUser('ml_commons_model.search', {
-        body: req.body,
-      });
-
-      return res.ok({
+  public async search({
+    request,
+    pagination,
+    algorithm,
+  }: {
+    request: ScopeableRequest;
+    algorithm?: string;
+    pagination: RequestPagination;
+  }) {
+    const { hits } = await this.osClient
+      .asScoped(request)
+      .callAsCurrentUser('ml_commons_model.search', {
         body: {
-          ok: true,
-          data: resp,
+          query:
+            algorithm === undefined
+              ? {
+                  match_all: {},
+                }
+              : {
+                  term: {
+                    algorithm: {
+                      value: algorithm,
+                    },
+                  },
+                },
+          ...getQueryFromSize(pagination),
         },
       });
+    return {
+      data: hits.hits.map(({ _id, _source: { model_content, name, algorithm, version } }) => ({
+        id: _id,
+        content: model_content,
+        name,
+        algorithm,
+        version,
+      })),
+      pagination: getPagination(pagination.currentPage, pagination.pageSize, hits.total.value),
+    };
+  }
 
-    } catch (error) {
-      return res.ok({
-        body: {
-          ok: false,
-          err: error.message,
-        },
+  public async delete({ request, modelId }: { request: ScopeableRequest; modelId: string }) {
+    const { result } = await this.osClient
+      .asScoped(request)
+      .callAsCurrentUser('ml_commons_model.delete', {
+        modelId,
       });
+    if (result === 'not_found') {
+      throw new ModelNotFound();
     }
-  };
+    return true;
+  }
 }
