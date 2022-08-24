@@ -14,27 +14,53 @@
  */
 
 import {
-  TASKS_BASE_API
+  TASK_BASE_API
 } from '../services/utils/constants';
 
 // eslint-disable-next-line import/no-default-export
 export default function (Client: any, config: any, components: any) {
   const ca = components.clientAction.factory;
 
-  if (!Client.prototype.ml_commons_tasks) {
-    Client.prototype.ml_commons_tasks = components.clientAction.namespaceFactory();
+  if (!Client.prototype.ml_commons_task) {
+    Client.prototype.ml_commons_task = components.clientAction.namespaceFactory();
   }
 
-  const mlCommonsTasks = Client.prototype.ml_commons_tasks.prototype;
+  const mlCommonsTask = Client.prototype.ml_commons_task.prototype;
 
   /**
    * Search tasks based on parameters indicated in the request body.
    */
-   mlCommonsTasks.searchTasks = ca({
+   mlCommonsTask.search = ca({
     method: 'POST',
     url: {
-      fmt: `${TASKS_BASE_API}/_search`,
+      fmt: `${TASK_BASE_API}/_search`,
     },
     needBody: true,
+  });
+
+  mlCommonsTask.getById = ca({
+    method: 'GET',
+    url: {
+      fmt: `${TASK_BASE_API}/<%=taskId=>`,
+      req: {
+        taskId: {
+          type: 'string',
+          required: true,
+        },
+      }
+    },
+  });
+
+  mlCommonsTask.delete = ca({
+    method: 'DELETE',
+    url: {
+      fmt: `${TASK_BASE_API}/<%=taskId=>`,
+      req: {
+        taskId: {
+          type: 'string',
+          required: true,
+        },
+      }
+    },
   });
 }

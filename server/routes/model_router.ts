@@ -13,12 +13,23 @@
  *   permissions and limitations under the License.
  */
 
-export const API_ROUTE_PREFIX = '/_plugins/_ml';
-export const TRAIN_BASE_API = `${API_ROUTE_PREFIX}/_train`;
-export const TASK_BASE_API = `${API_ROUTE_PREFIX}/tasks`;
-export const MODEL_BASE_API = `${API_ROUTE_PREFIX}/models`;
+import { schema } from '@osd/config-schema';
+import { IRouter } from "../../../../src/core/server";
 
-export const CLUSTER = {
-  TRAIN: 'opensearch_ml_commons_train',
-  MODEL: 'opensearch_ml_commons_model'
-};
+export default function (services, router: IRouter) {
+  const { modelService } = services;
+
+  router.get(
+    {
+      path: '/api/model',
+      // validate: {
+      //   query: schema.object({
+      //     methodName: schema.string(),
+      //   }),
+      //   body: schema.any(),
+      // }
+      validate: false
+    },
+    modelService.search
+  );   
+}

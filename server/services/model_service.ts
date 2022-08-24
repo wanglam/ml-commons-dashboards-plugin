@@ -16,30 +16,28 @@
 import { ILegacyClusterClient } from "../../../../src/core/server";
 
 
-export class TrainService {
+export class ModelService {
   private osClient: ILegacyClusterClient;
 
   constructor(osClient: ILegacyClusterClient) {
     this.osClient = osClient;
   }
 
-  trainModel = async (_context, req, res) => {
+  search = async (_context, req, res) => {
     const { callAsCurrentUser } = this.osClient.asScoped(req);
     try{
-      const resp = await callAsCurrentUser('ml_commons_train.trainModel', {
+      const resp = await callAsCurrentUser('ml_commons_model.search', {
         body: req.body,
-        methodName: req.query.methodName,
-        async: false
       });
 
       return res.ok({
         body: {
           ok: true,
+          data: resp,
         },
       });
 
-    }catch (error){
-      console.log("error here....");
+    } catch (error) {
       return res.ok({
         body: {
           ok: false,

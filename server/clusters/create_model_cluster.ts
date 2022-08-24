@@ -13,12 +13,16 @@
  *   permissions and limitations under the License.
  */
 
-export const API_ROUTE_PREFIX = '/_plugins/_ml';
-export const TRAIN_BASE_API = `${API_ROUTE_PREFIX}/_train`;
-export const TASK_BASE_API = `${API_ROUTE_PREFIX}/tasks`;
-export const MODEL_BASE_API = `${API_ROUTE_PREFIX}/models`;
+import {
+  CoreSetup,
+} from '../../../../src/core/server';
 
-export const CLUSTER = {
-  TRAIN: 'opensearch_ml_commons_train',
-  MODEL: 'opensearch_ml_commons_model'
-};
+
+import modelPlugin from './model_plugin';
+import { CLUSTER } from '../services/utils/constants';
+
+export default function createModelCluster(core: CoreSetup) {
+  return core.opensearch.legacy.createClient(CLUSTER.MODEL, {
+    plugins: [modelPlugin],
+  });
+}

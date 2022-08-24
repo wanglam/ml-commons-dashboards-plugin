@@ -44,9 +44,20 @@ export const MlCommonsApp = ({ basename, notifications, http, navigation }: MlCo
     //   );
     // });
     http.post("/api/traning/model",{
+      query: { methodName:"kmeans" },
       body: JSON.stringify({
-        methodName:"kmeans",
-        async: false
+        "parameters": {
+            "centroids": 3,
+            "iterations": 10,
+            "distance_type": "COSINE"
+        },
+        "input_query": {
+            "_source": ["taxless_total_price", "total_quantity"],
+            "size": 10000
+        },
+        "input_index": [
+            "opensearch_dashboards_sample_data_ecommerce"
+        ]
       })
     }).then((res)=>{
       console.log(res);
@@ -106,6 +117,13 @@ export const MlCommonsApp = ({ basename, notifications, http, navigation }: MlCo
                     </p>
                     <EuiButton type="primary" size="s" onClick={onClickHandler}>
                       <FormattedMessage id="mlCommons.buttonText" defaultMessage="Get data" />
+                    </EuiButton>
+                    <EuiButton type="primary" size="s" onClick={()=>{
+                      http.get("/api/model").then((payload)=>{
+                        console.log(payload);
+                      })
+                    }}>
+                      <FormattedMessage id="mlCommons.buttonText" defaultMessage="Fetch model" />
                     </EuiButton>
                   </EuiText>
                 </EuiPageContentBody>

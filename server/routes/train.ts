@@ -13,17 +13,24 @@
  *   permissions and limitations under the License.
  */
 
-// import { schema } from '@osd/config-schema';
+import { schema } from '@osd/config-schema';
+import { IRouter } from '../../../../src/core/server';
+import { TrainService } from '../services/train_service';
 
 
 // eslint-disable-next-line import/no-default-export
-export default function (services, router) {
+export default function (services: { trainService: TrainService }, router: IRouter) {
   const { trainService } = services;
 
   router.post(
     {
       path: '/api/traning/model',
-      validate: false
+      validate: {
+        query: schema.object({
+          methodName: schema.string(),
+        }),
+        body: schema.any(),
+      }
     },
     trainService.trainModel
   );
