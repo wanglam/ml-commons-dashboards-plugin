@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppMountParameters, CoreStart } from '../../../src/core/public';
 import { AppPluginStartDependencies } from './types';
-import { MlCommonsApp } from './components/app';
+import { MlCommonsApp } from './app';
 
 export const renderApp = (
   { notifications, http }: CoreStart,
