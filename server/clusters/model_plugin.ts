@@ -13,10 +13,7 @@
  *   permissions and limitations under the License.
  */
 
-import {
-  API_ROUTE_PREFIX,
-  MODEL_BASE_API
-} from '../services/utils/constants';
+import { API_ROUTE_PREFIX, MODEL_BASE_API } from '../services/utils/constants';
 
 // eslint-disable-next-line import/no-default-export
 export default function (Client: any, config: any, components: any) {
@@ -39,20 +36,20 @@ export default function (Client: any, config: any, components: any) {
   mlCommonsModel.delete = ca({
     method: 'DELETE',
     url: {
-      fmt: `${MODEL_BASE_API}/<%=modelId=>`,
+      fmt: `${MODEL_BASE_API}/<%=modelId%>`,
       req: {
         modelId: {
           type: 'string',
           required: true,
         },
-      }
+      },
     },
   });
 
   mlCommonsModel.predict = ca({
     method: 'POST',
     url: {
-      fmt: `${API_ROUTE_PREFIX}/_predict/<%=methodName=>/<%=modelId=>`,
+      fmt: `${API_ROUTE_PREFIX}/_predict/<%=methodName%>/<%=modelId%>`,
       req: {
         methodName: {
           type: 'string',
@@ -63,7 +60,7 @@ export default function (Client: any, config: any, components: any) {
           required: true,
         },
       },
-      needBody: true
+      needBody: true,
     },
   });
 }

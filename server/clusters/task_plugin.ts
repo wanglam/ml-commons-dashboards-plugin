@@ -13,9 +13,7 @@
  *   permissions and limitations under the License.
  */
 
-import {
-  TASK_BASE_API
-} from '../services/utils/constants';
+import { TASK_BASE_API } from '../services/utils/constants';
 
 // eslint-disable-next-line import/no-default-export
 export default function (Client: any, config: any, components: any) {
@@ -30,7 +28,7 @@ export default function (Client: any, config: any, components: any) {
   /**
    * Search tasks based on parameters indicated in the request body.
    */
-   mlCommonsTask.search = ca({
+  mlCommonsTask.search = ca({
     method: 'POST',
     url: {
       fmt: `${TASK_BASE_API}/_search`,
@@ -41,26 +39,26 @@ export default function (Client: any, config: any, components: any) {
   mlCommonsTask.getById = ca({
     method: 'GET',
     url: {
-      fmt: `${TASK_BASE_API}/<%=taskId=>`,
+      fmt: `${TASK_BASE_API}/<%=taskId%>`,
       req: {
         taskId: {
           type: 'string',
           required: true,
         },
-      }
+      },
     },
   });
 
   mlCommonsTask.delete = ca({
     method: 'DELETE',
     url: {
-      fmt: `${TASK_BASE_API}/<%=taskId=>`,
+      fmt: `${TASK_BASE_API}/<%=taskId%>`,
       req: {
         taskId: {
           type: 'string',
           required: true,
         },
-      }
+      },
     },
   });
 }
