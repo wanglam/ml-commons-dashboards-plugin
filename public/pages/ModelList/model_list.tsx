@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { EuiPageHeader, EuiButton, EuiBasicTable, EuiSpacer } from '@elastic/eui';
+import React, { useEffect, useState, useCallback } from 'react';
+import { EuiPageHeader, EuiButton, EuiSpacer } from '@elastic/eui';
 
-import { ModelSearchItem, ModelService } from '../../services/model_service';
+import { ModelSearchItem } from '../../apis/model';
 import { ModelTable } from '../../components/model_table';
-import { ServiceProvider } from '../../services/service_provider';
+import { APIProvider } from '../../apis/api_provider';
 
 export function ModelList() {
   const [models, setModels] = useState<ModelSearchItem[]>([]);
@@ -13,14 +13,33 @@ export function ModelList() {
     totalRecords: undefined as number | undefined,
     totalPages: undefined as number | undefined,
   });
+
+  const handlePaginationChange = useCallback(
+    (pagination: { currentPage: number; pageSize: number }) => {
+      setCurrentPageAndPageSize((previousValue) => {
+        if (
+          previousValue.currentPage === pagination.currentPage &&
+          previousValue.pageSize === pagination.pageSize
+        ) {
+          return previousValue;
+        }
+        return {
+          ...previousValue,
+          ...pagination,
+        };
+      });
+    },
+    []
+  );
+
   useEffect(() => {
-    ServiceProvider.getService('model')
+    APIProvider.getAPI('model')
       .search({ currentPage: pagination.currentPage, pageSize: pagination.pageSize })
       .then((payload) => {
         setModels(payload.data);
         setCurrentPageAndPageSize(payload.pagination);
       });
-  }, [pagination, setModels, setCurrentPageAndPageSize]);
+  }, [pagination.currentPage, pagination.pageSize, setModels, setCurrentPageAndPageSize]);
 
   return (
     <>
@@ -30,7 +49,11 @@ export function ModelList() {
         bottomBorder
       />
       <EuiSpacer />
-      <ModelTable models={models} pagination={pagination} />
+      <ModelTable
+        models={models}
+        pagination={pagination}
+        onPaginationChange={handlePaginationChange}
+      />
     </>
   );
 }

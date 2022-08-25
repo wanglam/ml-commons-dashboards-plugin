@@ -1,6 +1,6 @@
 import { MODEL_API_ENDPOINT } from '../../server/routes/constants';
 import { Pagination } from '../../server/services/utils/pagination';
-import { HttpProvider } from './http_provider';
+import { InnerHttpProvider } from './inner_http_provider';
 
 export interface ModelSearchItem {
   id: string;
@@ -13,9 +13,9 @@ export interface ModelSarchResponse {
   pangination: Pagination;
 }
 
-export class ModelService {
+export class Model {
   public search(query: { algorithm?: string; currentPage: number; pageSize: number }) {
-    return HttpProvider.getHttp().get<{
+    return InnerHttpProvider.getHttp().get<{
       data: { id: string; name: string; algorithm: string }[];
       pagination: {
         currentPage: number;
@@ -29,6 +29,6 @@ export class ModelService {
   }
 
   public delete(modelId: string) {
-    return HttpProvider.getHttp().delete(`${MODEL_API_ENDPOINT}/${modelId}`);
+    return InnerHttpProvider.getHttp().delete(`${MODEL_API_ENDPOINT}/${modelId}`);
   }
 }

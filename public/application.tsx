@@ -3,14 +3,15 @@ import ReactDOM from 'react-dom';
 import { AppMountParameters, CoreStart } from '../../../src/core/public';
 import { AppPluginStartDependencies } from './types';
 import { MlCommonsApp } from './app';
-import { HttpProvider } from './services/http_provider';
+import { InnerHttpProvider } from './apis/inner_http_provider';
+import { APIProvider } from './apis/api_provider';
 
 export const renderApp = (
   { notifications, http }: CoreStart,
   { navigation }: AppPluginStartDependencies,
   { appBasePath, element }: AppMountParameters
 ) => {
-  HttpProvider.setHttp(http);
+  InnerHttpProvider.setHttp(http);
 
   ReactDOM.render(
     <MlCommonsApp
@@ -24,6 +25,7 @@ export const renderApp = (
 
   return () => {
     ReactDOM.unmountComponentAtNode(element);
-    HttpProvider.setHttp(undefined);
+    InnerHttpProvider.setHttp(undefined);
+    APIProvider.clear();
   };
 };

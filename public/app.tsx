@@ -23,9 +23,7 @@ export const MlCommonsApp = ({ basename, notifications, http, navigation }: MlCo
         </EuiPageSideBar>
         <EuiPageBody>
           <Switch>
-            <Route path="/model">
-              <ModelList />
-            </Route>
+            <Route path="/model" component={ModelList} />
           </Switch>
         </EuiPageBody>
       </EuiPage>
