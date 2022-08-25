@@ -5,6 +5,7 @@ import { EuiPage, EuiPageBody, EuiPageSideBar } from '@elastic/eui';
 import { CoreStart } from '../../../src/core/public';
 import { NavigationPublicPluginStart } from '../../../src/plugins/navigation/public';
 import { ModelList } from './pages/ModelList';
+import { TaskList } from './pages/TaskList';
 import { NavPanel } from './components/nav_panel';
 
 interface MlCommonsAppDeps {
@@ -24,10 +25,11 @@ export const MlCommonsApp = ({ basename, notifications, http, navigation }: MlCo
         <EuiPageBody>
           <Switch>
             <Route path="/model" component={ModelList} />
+            <Route path="/task" component={TaskList} />
+            <Redirect path="/" to="/model" exact />
           </Switch>
         </EuiPageBody>
       </EuiPage>
-      <Redirect path="/" to="/model" />
     </Router>
   );
 };

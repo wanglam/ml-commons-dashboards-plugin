@@ -10,20 +10,12 @@ export interface ModelSearchItem {
 
 export interface ModelSarchResponse {
   data: ModelSearchItem[];
-  pangination: Pagination;
+  pagination: Pagination;
 }
 
 export class Model {
   public search(query: { algorithm?: string; currentPage: number; pageSize: number }) {
-    return InnerHttpProvider.getHttp().get<{
-      data: { id: string; name: string; algorithm: string }[];
-      pagination: {
-        currentPage: number;
-        pageSize: number;
-        totalRecords: number;
-        totalPages: number;
-      };
-    }>(MODEL_API_ENDPOINT, {
+    return InnerHttpProvider.getHttp().get<ModelSarchResponse>(MODEL_API_ENDPOINT, {
       query,
     });
   }

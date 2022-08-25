@@ -25,9 +25,6 @@ export default function (Client: any, config: any, components: any) {
 
   const mlCommonsTask = Client.prototype.ml_commons_task.prototype;
 
-  /**
-   * Search tasks based on parameters indicated in the request body.
-   */
   mlCommonsTask.search = ca({
     method: 'POST',
     url: {

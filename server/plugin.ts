@@ -8,9 +8,11 @@ import {
 
 import createTrainCluster from './clusters/create_train_cluster';
 import createModelCluster from './clusters/create_model_cluster';
+import createTaskCluster from './clusters/create_task_cluster';
 import { MlCommonsPluginSetup, MlCommonsPluginStart } from './types';
-import { modelRouter } from './routes';
+import { modelRouter, taskRouter } from './routes';
 import { ModelService, TrainService } from './services';
+import { TaskService } from './services/task_service';
 
 export class MlCommonsPlugin implements Plugin<MlCommonsPluginSetup, MlCommonsPluginStart> {
   private readonly logger: Logger;
@@ -25,16 +27,20 @@ export class MlCommonsPlugin implements Plugin<MlCommonsPluginSetup, MlCommonsPl
 
     const trainOSClient = createTrainCluster(core);
     const modelOSClient = createModelCluster(core);
+    const taskOSClient = createTaskCluster(core);
 
     const trainService = new TrainService(trainOSClient);
     const modelService = new ModelService(modelOSClient);
+    const taskService = new TaskService(taskOSClient);
 
     const services = {
       trainService,
       modelService,
+      taskService,
     };
 
     modelRouter(services, router);
+    taskRouter(services, router);
 
     return {};
   }
