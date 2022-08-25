@@ -13,7 +13,7 @@
  *   permissions and limitations under the License.
  */
 
-import { ILegacyClusterClient } from "../../../../src/core/server";
+import { ILegacyClusterClient, ScopeableRequest } from "../../../../src/core/server";
 
 
 export class TrainService {
@@ -23,30 +23,31 @@ export class TrainService {
     this.osClient = osClient;
   }
 
-  trainModel = async (_context, req, res) => {
-    const { callAsCurrentUser } = this.osClient.asScoped(req);
-    // console.log(req.query, req.body, req);
-    try{
-      const resp = await callAsCurrentUser('ml_commons_train.trainModel', {
-        ...req.query,
-        methodName:"kmeans",
-        async: false
-      });
-
-      console.log(resp);
-      return res.ok({
-        body: {
-          ok: true,
-        },
-      });
-
-    }catch (error){
-      return res.ok({
-        body: {
-          ok: false,
-          err: error.message,
-        },
-      });
+  public async trainModel ({
+    methodName,
+    async,
+    body,
+    request
+  }: {
+    methodName: string;
+    async: boolean;
+    body: any;
+    request: ScopeableRequest
+  }) {
+    const response = await this.osClient.asScoped(request).callAsCurrentUser('ml_commons_train.trainModel', {
+      body,
+      methodName,
+      async
+    });
+    if(async){
+      return {
+        taskId: response["task_id"],
+        status: response["status"],
+      }
     }
-  };
+    return {
+      modelId: response["model_id"],
+      status: response["status"],
+    }
+  }
 }

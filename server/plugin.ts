@@ -7,9 +7,10 @@ import {
 } from '../../../src/core/server';
 
 import createTrainCluster from './clusters/create_train_cluster';
+import createModelCluster from './clusters/create_model_cluster';
 import { MlCommonsPluginSetup, MlCommonsPluginStart } from './types';
-import { train } from './routes';
-import { TrainService } from './services';
+import { modelRouter } from './routes';
+import { ModelService, TrainService } from './services';
 
 export class MlCommonsPlugin implements Plugin<MlCommonsPluginSetup, MlCommonsPluginStart> {
   private readonly logger: Logger;
@@ -23,17 +24,17 @@ export class MlCommonsPlugin implements Plugin<MlCommonsPluginSetup, MlCommonsPl
     const router = core.http.createRouter();
 
     const trainOSClient = createTrainCluster(core);
-
-    // Register server side APIs
-    // defineRoutes(router);
+    const modelOSClient = createModelCluster(core);
 
     const trainService = new TrainService(trainOSClient);
+    const modelService = new ModelService(modelOSClient);
 
     const services = {
       trainService,
-    }
+      modelService,
+    };
 
-    train(services, router)
+    modelRouter(services, router);
 
     return {};
   }

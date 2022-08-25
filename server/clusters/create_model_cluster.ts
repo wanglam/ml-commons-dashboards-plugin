@@ -13,18 +13,16 @@
  *   permissions and limitations under the License.
  */
 
-// import { schema } from '@osd/config-schema';
+import {
+  CoreSetup,
+} from '../../../../src/core/server';
 
 
-// eslint-disable-next-line import/no-default-export
-export default function (services, router) {
-  const { trainService } = services;
+import modelPlugin from './model_plugin';
+import { CLUSTER } from '../services/utils/constants';
 
-  router.post(
-    {
-      path: '/api/traning/model',
-      validate: false
-    },
-    trainService.trainModel
-  );
+export default function createModelCluster(core: CoreSetup) {
+  return core.opensearch.legacy.createClient(CLUSTER.MODEL, {
+    plugins: [modelPlugin],
+  });
 }
